@@ -1,5 +1,5 @@
 {
-  "name": "mateandmentors",
+  "name": "golden-rooms",
   "version": "1.0.0",
   "description": "",
   "main": "index",
@@ -9,12 +9,12 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "mate",
-    "mentors",
-    "mentorship",
-    "education"
+    "rooms",
+    "flats",
+    "rentals",
+    "sale"
   ],
-  "author": "Devashish",
+  "author": "Devashish Rathod",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
