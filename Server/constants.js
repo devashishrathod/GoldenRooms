@@ -79,6 +79,32 @@ module.exports = {
     russia: "RU",
   }),
 
+  PROPERTY_TYPES: Object.freeze({
+    HOUSE: "HOUSE",
+    SHOP: "SHOP",
+    OFFICE: "OFFICE",
+    LAND: "LAND",
+    WAREHOUSE: "WAREHOUSE",
+  }),
+
+  HOUSE_TYPES: Object.freeze({
+    ONE_ROOM: "1R",
+    ONE_RK: "1RK",
+    ONE_BHK: "1BHK",
+    TWO_BHK: "2BHK",
+    THREE_BHK: "3BHK",
+    FOUR_BHK: "4BHK",
+    ROW_HOUSE: "ROW_HOUSE",
+  }),
+
+  WAREHOUSE_TYPES: Object.freeze({
+    COLD_STORAGE: "COLD_STORAGE",
+    INDUSTRIAL: "INDUSTRIAL",
+    COMMERCIAL: "COMMERCIAL",
+  }),
+
+  AREA_UNITS: Object.freeze({ SQFT: "SQFT", SQM: "SQM", ACRE: "ACRE" }),
+
   DEFAULT_IMAGES: Object.freeze({
     PRENATAL_CARE:
       "https://res.cloudinary.com/drvdnqydw/image/upload/f_auto,q_auto/v1/Images/hrhc8iwbjl2qnnqu9kaq?_a=BAMAK+Jw0",
