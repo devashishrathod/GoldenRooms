@@ -43,13 +43,11 @@ exports.createProperty = async (userId, payload, images) => {
   const imageUrls = [];
   if (images) {
     const imagesArr = Array.isArray(images) ? images : [images];
-    console.log(imagesArr, "done");
     for (let image of imagesArr) {
       const imageUrl = await uploadImage(image.tempFilePath);
       imageUrls.push(imageUrl);
     }
   }
-  console.log(imageUrls, "arr");
   const propertyData = {
     ownerId,
     type,

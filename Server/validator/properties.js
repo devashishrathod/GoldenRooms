@@ -1,4 +1,5 @@
 const Joi = require("joi");
+const objectId = require("./validJoiObjectId");
 const {
   PROPERTY_TYPES,
   HOUSE_TYPES,
@@ -67,4 +68,65 @@ exports.validateCreateProperty = (data) => {
     }),
   }).and("lat", "lng");
   return createSchema.validate(data, { abortEarly: false });
+};
+
+exports.validateGetAllPropertiesQuery = (data) => {
+  const schema = Joi.object({
+    page: Joi.number().integer().min(1).default(1),
+    limit: Joi.number().integer().min(1).max(100).default(10),
+    search: Joi.string().trim().min(1).max(100),
+    ownerId: objectId(),
+    ownerName: Joi.string().trim().min(1).max(100),
+    mobile: Joi.string().trim().min(5).max(15),
+    city: Joi.string().trim().min(1).max(100),
+    state: Joi.string().trim().min(1).max(100),
+    country: Joi.string().trim().min(1).max(100),
+    zipcode: Joi.string().pattern(/^\d{6}$/),
+    type: Joi.string()
+      .valid(...Object.values(PROPERTY_TYPES))
+      .uppercase(),
+    houseType: Joi.string()
+      .valid(...Object.values(HOUSE_TYPES))
+      .uppercase(),
+    warehouseType: Joi.string()
+      .valid(...Object.values(WAREHOUSE_TYPES))
+      .uppercase(),
+    areaUnit: Joi.string()
+      .valid(...Object.values(AREA_UNITS))
+      .uppercase(),
+    minPrice: Joi.number().min(0),
+    maxPrice: Joi.number().min(0),
+    minArea: Joi.number().min(0),
+    maxArea: Joi.number().min(0),
+    isAvailable: Joi.boolean(),
+    isVerified: Joi.boolean(),
+    fromDate: Joi.date().iso(),
+    toDate: Joi.date().iso(),
+    sortBy: Joi.string().valid("createdAt", "updatedAt", "rentAmount"),
+    sortOrder: Joi.string().valid("asc", "desc").default("desc"),
+  })
+    .custom((value, helpers) => {
+      if (value.minPrice && value.maxPrice && value.minPrice > value.maxPrice) {
+        return helpers.error("any.invalid", {
+          message: "minPrice cannot be greater than maxPrice",
+        });
+      }
+      if (value.minArea && value.maxArea && value.minArea > value.maxArea) {
+        return helpers.error("any.invalid", {
+          message: "minArea cannot be greater than maxArea",
+        });
+      }
+      if (value.fromDate && value.toDate) {
+        const from = new Date(value.fromDate);
+        const to = new Date(value.toDate);
+        if (from > to) {
+          return helpers.error("any.invalid", {
+            message: "fromDate cannot be greater than toDate",
+          });
+        }
+      }
+      return value;
+    })
+    .unknown(false);
+  return schema.validate(data, { abortEarly: false });
 };
