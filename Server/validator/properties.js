@@ -10,7 +10,7 @@ const {
 
 exports.validateCreateProperty = (data) => {
   const createSchema = Joi.object({
-    ownerId: Joi.string().optional(),
+    ownerId: objectId().optional(),
     type: Joi.string()
       .valid(...Object.values(PROPERTY_TYPES))
       .required(),
@@ -70,12 +70,80 @@ exports.validateCreateProperty = (data) => {
   return createSchema.validate(data, { abortEarly: false });
 };
 
+exports.validateUpdateProperty = (data) => {
+  const updateSchema = Joi.object({
+    ownerId: objectId().optional(),
+    type: Joi.string()
+      .valid(...Object.values(PROPERTY_TYPES))
+      .optional(),
+    ownerName: Joi.string().trim().optional(),
+    mobile: Joi.string().length(10).optional(),
+    fullAddress: Joi.string().optional(),
+    area: Joi.string().optional(),
+    city: Joi.string().optional(),
+    state: Joi.string().optional(),
+    country: Joi.string().default("india"),
+    zipcode: Joi.string()
+      .pattern(/^\d{6}$/)
+      .optional(),
+    lat: Joi.number().optional(),
+    lng: Joi.number().optional(),
+    rentAmount: Joi.number().min(0).optional(),
+    amountCurrencyCode: Joi.string()
+      .valid(...Object.values(COUNTRY_NAME_TO_ISO))
+      .optional(),
+    houseType: Joi.when("type", {
+      is: PROPERTY_TYPES.HOUSE,
+      then: Joi.string()
+        .valid(...Object.values(HOUSE_TYPES))
+        .required(),
+      otherwise: Joi.forbidden(),
+    }),
+    warehouseType: Joi.when("type", {
+      is: PROPERTY_TYPES.WAREHOUSE,
+      then: Joi.string()
+        .valid(...Object.values(WAREHOUSE_TYPES))
+        .optional(),
+      otherwise: Joi.forbidden(),
+    }),
+    areaValue: Joi.when("type", {
+      is: Joi.valid(
+        PROPERTY_TYPES.SHOP,
+        PROPERTY_TYPES.OFFICE,
+        PROPERTY_TYPES.LAND,
+        PROPERTY_TYPES.WAREHOUSE
+      ),
+      then: Joi.number().required(),
+      otherwise: Joi.forbidden(),
+    }),
+    areaUnit: Joi.when("type", {
+      is: Joi.valid(
+        PROPERTY_TYPES.SHOP,
+        PROPERTY_TYPES.OFFICE,
+        PROPERTY_TYPES.LAND,
+        PROPERTY_TYPES.WAREHOUSE
+      ),
+      then: Joi.string()
+        .valid(...Object.values(AREA_UNITS))
+        .default(AREA_UNITS.SQFT),
+      otherwise: Joi.forbidden(),
+    }),
+    removeImages: Joi.array().items(Joi.string().uri()).optional(),
+    isReplaceImages: Joi.boolean().optional(),
+    isAvailable: Joi.boolean().optional(),
+    isVerified: Joi.boolean().optional(),
+  })
+    .and("lat", "lng")
+    .unknown(false);
+  return updateSchema.validate(data, { abortEarly: false });
+};
+
 exports.validateGetAllPropertiesQuery = (data) => {
   const schema = Joi.object({
     page: Joi.number().integer().min(1).default(1),
     limit: Joi.number().integer().min(1).max(100).default(10),
     search: Joi.string().trim().min(1).max(100),
-    ownerId: objectId(),
+    ownerId: objectId().optional(),
     ownerName: Joi.string().trim().min(1).max(100),
     mobile: Joi.string().trim().min(5).max(15),
     city: Joi.string().trim().min(1).max(100),
