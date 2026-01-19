@@ -17,6 +17,7 @@ const refField = (refModel, errorLabel = refModel) =>
 
 module.exports = Object.freeze({
   userField: refField("User"),
+  agentField: refField("Agent"),
   categoryField: refField("Category"),
   subCategoryField: refField("SubCategory"),
   locationField: refField("Location"),

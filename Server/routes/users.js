@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
-const { getUser, updateUser } = require("../controllers/users");
 const { verifyJwtToken } = require("../middlewares");
+const { getUser, getAllUsers, updateUser } = require("../controllers/users");
 
-router.get("/get", verifyJwtToken, getUser);
+router.get("/get", getUser);
+router.get("/get-all", getAllUsers);
 router.put("/update", verifyJwtToken, updateUser);
 
 module.exports = router;

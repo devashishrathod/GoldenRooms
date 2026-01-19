@@ -3,10 +3,12 @@ const validator = require("validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { ROLES, LOGIN_TYPES } = require("../constants");
+const { agentField } = require("./validObjectId");
 const { isValidPhoneNumber } = require("../validator/common");
 
 const userSchema = new mongoose.Schema(
   {
+    agentId: agentField,
     name: { type: String },
     address: { type: String },
     dob: { type: String },
@@ -56,7 +58,7 @@ const userSchema = new mongoose.Schema(
     isActive: { type: Boolean, default: true },
     isDeleted: { type: Boolean, default: false },
   },
-  { timestamps: true, versionKey: false }
+  { timestamps: true, versionKey: false },
 );
 
 userSchema.methods.getSignedJwtToken = function (options = {}) {
@@ -65,7 +67,7 @@ userSchema.methods.getSignedJwtToken = function (options = {}) {
   return jwt.sign(
     { id: this._id, role: this.role, name: this.name, email: this.email },
     secret,
-    { expiresIn }
+    { expiresIn },
   );
 };
 

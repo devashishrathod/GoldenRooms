@@ -1,9 +1,25 @@
 const User = require("../../models/User");
+const Agent = require("../../models/Agent");
 const { ROLES, LOGIN_TYPES } = require("../../constants");
 const { asyncWrapper, sendSuccess, throwError } = require("../../utils");
 
 exports.register = asyncWrapper(async (req, res) => {
-  let { name, email, password, mobile, role, loginType, fcmToken } = req.body;
+  let {
+    name,
+    email,
+    password,
+    mobile,
+    role,
+    loginType,
+    fcmToken,
+    jobTitle,
+    city,
+    speciality,
+    noOfYearsOfExperience,
+    noOfPropertiesSold,
+    noOfDealsClosed,
+    languagesKnown,
+  } = req.body;
   if (!mobile && !email) {
     throwError(422, "Email or Mobile number any one of this is required");
   }
@@ -32,6 +48,28 @@ exports.register = asyncWrapper(async (req, res) => {
     isOnline: true,
   };
   user = await User.create(userData);
+  let agent = null;
+  if (role === ROLES.AGENT) {
+    agent = await Agent.create({
+      userId: user._id,
+      name,
+      email,
+      mobile,
+      jobTitle,
+      city,
+      speciality,
+      noOfYearsOfExperience,
+      noOfPropertiesSold,
+      noOfDealsClosed,
+      languagesKnown,
+    });
+    user.agentId = agent._id;
+    await user.save();
+  }
   const token = user.getSignedJwtToken();
-  return sendSuccess(res, 201, "User registered successfully", { user, token });
+  return sendSuccess(res, 201, "User registered successfully", {
+    user,
+    agent,
+    token,
+  });
 });

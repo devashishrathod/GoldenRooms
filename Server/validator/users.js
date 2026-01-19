@@ -1,4 +1,6 @@
 const Joi = require("joi");
+const { ROLES } = require("../constants");
+const objectId = require("./validJoiObjectId");
 
 exports.validateUpdateUser = (data) => {
   const schema = Joi.object({
@@ -20,6 +22,20 @@ exports.validateUpdateUser = (data) => {
       "number.base": "Mobile number must be numeric",
       "number.min": "Mobile number must be 10 digits",
       "number.max": "Mobile number must be 10 digits",
+    }),
+  });
+  return schema.validate(data, { abortEarly: false });
+};
+
+exports.validateGetAllUsersQueries = (data) => {
+  const schema = Joi.object({
+    page: Joi.number().min(1).default(1),
+    limit: Joi.number().min(1).max(100).default(10),
+    role: Joi.string().valid(...Object.values(ROLES)),
+    isActive: Joi.boolean(),
+    search: Joi.string().trim().allow(""),
+    categoryId: objectId().messages({
+      "any.invalid": "Invalid subCategoryId format",
     }),
   });
   return schema.validate(data, { abortEarly: false });
