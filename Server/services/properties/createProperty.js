@@ -1,8 +1,9 @@
 const { ROLES } = require("../../constants");
 const Property = require("../../models/Property");
 const User = require("../../models/User");
-const { throwError } = require("../../utils");
-const { uploadImage, uploadVideo } = require("../uploads");
+const Category = require("../../models/Category");
+const { throwError, validateObjectId } = require("../../utils");
+const { uploadImage } = require("../uploads");
 
 const validateLatLng = (lat, lng) => {
   const isLatProvided = lat !== undefined && lat !== null;
@@ -17,7 +18,8 @@ exports.createProperty = async (userId, payload, images) => {
   if (!user || user.isDeleted) throwError(404, "User not found");
   let {
     ownerId,
-    type,
+    // type,
+    categoryId,
     ownerName,
     mobile,
     fullAddress,
@@ -48,9 +50,16 @@ exports.createProperty = async (userId, payload, images) => {
       imageUrls.push(imageUrl);
     }
   }
+  validateObjectId(categoryId, "category Id");
+  const category = await Category.findOne({
+    _id: categoryId,
+    isDeleted: false,
+  });
+  if (!category) throwError(404, "Category not found");
   const propertyData = {
     ownerId,
-    type,
+    // type,
+    categoryId,
     ownerName,
     mobile,
     address: {

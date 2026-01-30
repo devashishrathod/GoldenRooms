@@ -1,5 +1,6 @@
 const Property = require("../../models/Property");
 const User = require("../../models/User");
+const Category = require("../../models/Category");
 const { ROLES } = require("../../constants");
 const { throwError, validateObjectId } = require("../../utils");
 const { uploadImage, deleteImage } = require("../uploads");
@@ -27,7 +28,8 @@ exports.updateProperty = async (userId, propertyId, payload, images) => {
   }
   let {
     ownerId,
-    type,
+    // type,
+    categoryId,
     ownerName,
     mobile,
     fullAddress,
@@ -56,12 +58,12 @@ exports.updateProperty = async (userId, propertyId, payload, images) => {
   let finalImages = [...property.images];
   if (removeImages.length) {
     const invalidImages = removeImages.filter(
-      (img) => !finalImages.includes(img)
+      (img) => !finalImages.includes(img),
     );
     if (invalidImages.length) {
       throwError(
         400,
-        "One or more images you are trying to remove do not exist"
+        "One or more images you are trying to remove do not exist",
       );
     }
     for (const img of removeImages) {
@@ -83,7 +85,16 @@ exports.updateProperty = async (userId, propertyId, payload, images) => {
   if (!finalImages.length) throwError(400, "At least one image is required");
   updateData.images = finalImages;
   if (ownerId) updateData.ownerId = ownerId;
-  if (type) updateData.type = type;
+  // if (type) updateData.type = type;
+  if (categoryId) {
+    validateObjectId(categoryId, "category Id");
+    const category = await Category.findOne({
+      _id: categoryId,
+      isDeleted: false,
+    });
+    if (!category) throwError(404, "Category not found");
+    updateData.categoryId = categoryId;
+  }
   if (ownerName) updateData.ownerName = ownerName;
   if (mobile) updateData.mobile = mobile;
   if (rentAmount !== undefined) updateData.rentAmount = rentAmount;
@@ -128,6 +139,6 @@ exports.updateProperty = async (userId, propertyId, payload, images) => {
   return await Property.findByIdAndUpdate(
     propertyId,
     { $set: updateData },
-    { new: true }
+    { new: true },
   );
 };

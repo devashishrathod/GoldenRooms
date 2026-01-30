@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Property = require("../../models/Property");
-const { pagination } = require("../../utils");
+const { pagination, validateObjectId } = require("../../utils");
+const { image } = require("../../configs/cloudinary");
 
 exports.getAllProperties = async (query) => {
   let {
@@ -14,7 +15,8 @@ exports.getAllProperties = async (query) => {
     state,
     country,
     zipcode,
-    type,
+    // type,
+    categoryId,
     houseType,
     warehouseType,
     areaUnit,
@@ -38,7 +40,11 @@ exports.getAllProperties = async (query) => {
   if (isVerified !== undefined) {
     match.isVerified = isVerified === "true" || isVerified === true;
   }
-  if (type) match.type = type.toUpperCase();
+  // if (type) match.type = type.toUpperCase();
+  if (categoryId) {
+    validateObjectId(categoryId);
+    match.categoryId = new mongoose.Types.ObjectId(categoryId);
+  }
   if (houseType) match.houseType = houseType.toUpperCase();
   if (warehouseType) match.warehouseType = warehouseType.toUpperCase();
   if (areaUnit) match["area.unit"] = areaUnit.toUpperCase();
@@ -93,6 +99,15 @@ exports.getAllProperties = async (query) => {
     },
     { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
     {
+      $lookup: {
+        from: "categories",
+        localField: "categoryId",
+        foreignField: "_id",
+        as: "category",
+      },
+    },
+    { $unwind: { path: "$category", preserveNullAndEmptyArrays: true } },
+    {
       $project: {
         ownerName: 1,
         mobile: 1,
@@ -114,6 +129,13 @@ exports.getAllProperties = async (query) => {
           mobile: "$user.mobile",
           image: "$user.image",
           isActive: "$user.isActive",
+        },
+        category: {
+          _id: "$category._id",
+          name: "$category.name",
+          description: "$category.description",
+          image: "$category.image",
+          isActive: "$category.isActive",
         },
       },
     },

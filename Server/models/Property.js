@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { userField } = require("./validObjectId");
+const { userField, categoryField } = require("./validObjectId");
 const {
   PROPERTY_TYPES,
   HOUSE_TYPES,
@@ -11,11 +11,12 @@ const {
 const propertySchema = new mongoose.Schema(
   {
     ownerId: userField,
-    type: {
-      type: String,
-      enum: [...Object.values(PROPERTY_TYPES)],
-      required: true,
-    },
+    categoryId: categoryField,
+    // type: {
+    //   type: String,
+    //   enum: [...Object.values(PROPERTY_TYPES)],
+    //   required: true,
+    // },
     images: {
       type: [String],
       validate: [(v) => v.length > 0, "At least one image required"],
@@ -72,7 +73,7 @@ const propertySchema = new mongoose.Schema(
     isVerified: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false },
   },
-  { timestamps: true, versionKey: false }
+  { timestamps: true, versionKey: false },
 );
 
 module.exports = mongoose.model("Property", propertySchema);

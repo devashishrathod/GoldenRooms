@@ -1,7 +1,7 @@
 const Joi = require("joi");
 const objectId = require("./validJoiObjectId");
 const {
-  PROPERTY_TYPES,
+  // PROPERTY_TYPES,
   HOUSE_TYPES,
   WAREHOUSE_TYPES,
   AREA_UNITS,
@@ -11,9 +11,10 @@ const {
 exports.validateCreateProperty = (data) => {
   const createSchema = Joi.object({
     ownerId: objectId().optional(),
-    type: Joi.string()
-      .valid(...Object.values(PROPERTY_TYPES))
-      .required(),
+    // type: Joi.string()
+    //   .valid(...Object.values(PROPERTY_TYPES))
+    //   .required(),
+    categoryId: objectId().required(),
     ownerName: Joi.string().trim().optional(),
     mobile: Joi.string().length(10).required(),
     fullAddress: Joi.string().optional(),
@@ -30,42 +31,52 @@ exports.validateCreateProperty = (data) => {
     amountCurrencyCode: Joi.string()
       .valid(...Object.values(COUNTRY_NAME_TO_ISO))
       .optional(),
-    houseType: Joi.when("type", {
-      is: PROPERTY_TYPES.HOUSE,
-      then: Joi.string()
-        .valid(...Object.values(HOUSE_TYPES))
-        .required(),
-      otherwise: Joi.forbidden(),
-    }),
-    warehouseType: Joi.when("type", {
-      is: PROPERTY_TYPES.WAREHOUSE,
-      then: Joi.string()
-        .valid(...Object.values(WAREHOUSE_TYPES))
-        .optional()
-        .default(WAREHOUSE_TYPES.COMMERCIAL),
-      otherwise: Joi.forbidden(),
-    }),
-    areaValue: Joi.when("type", {
-      is: Joi.valid(
-        PROPERTY_TYPES.SHOP,
-        PROPERTY_TYPES.OFFICE,
-        PROPERTY_TYPES.LAND,
-        PROPERTY_TYPES.WAREHOUSE
-      ),
-      then: Joi.number().required(),
-    }),
-    areaUnit: Joi.when("type", {
-      is: Joi.valid(
-        PROPERTY_TYPES.SHOP,
-        PROPERTY_TYPES.OFFICE,
-        PROPERTY_TYPES.LAND,
-        PROPERTY_TYPES.WAREHOUSE
-      ),
-      then: Joi.string()
-        .valid(...Object.values(AREA_UNITS))
-        .default(AREA_UNITS.SQFT),
-      otherwise: Joi.forbidden(),
-    }),
+    houseType: Joi.string()
+      .valid(...Object.values(HOUSE_TYPES))
+      .optional(),
+    // Joi.when("type", {
+    //   is: PROPERTY_TYPES.HOUSE,
+    //   then: Joi.string()
+    //     .valid(...Object.values(HOUSE_TYPES))
+    //     .required(),
+    //   otherwise: Joi.forbidden(),
+    // }),
+    warehouseType: Joi.string()
+      .valid(...Object.values(WAREHOUSE_TYPES))
+      .optional(),
+    // Joi.when("type", {
+    //   is: PROPERTY_TYPES.WAREHOUSE,
+    //   then: Joi.string()
+    //     .valid(...Object.values(WAREHOUSE_TYPES))
+    //     .optional()
+    //     .default(WAREHOUSE_TYPES.COMMERCIAL),
+    //   otherwise: Joi.forbidden(),
+    // }),
+    areaValue: Joi.number().optional(),
+    // Joi.when("type", {
+    //   is: Joi.valid(
+    //     PROPERTY_TYPES.SHOP,
+    //     PROPERTY_TYPES.OFFICE,
+    //     PROPERTY_TYPES.LAND,
+    //     PROPERTY_TYPES.WAREHOUSE,
+    //   ),
+    //   then: Joi.number().required(),
+    // }),
+    areaUnit: Joi.string()
+      .valid(...Object.values(AREA_UNITS))
+      .default(AREA_UNITS.SQFT),
+    // Joi.when("type", {
+    //   is: Joi.valid(
+    //     PROPERTY_TYPES.SHOP,
+    //     PROPERTY_TYPES.OFFICE,
+    //     PROPERTY_TYPES.LAND,
+    //     PROPERTY_TYPES.WAREHOUSE,
+    //   ),
+    //   then: Joi.string()
+    //     .valid(...Object.values(AREA_UNITS))
+    //     .default(AREA_UNITS.SQFT),
+    //   otherwise: Joi.forbidden(),
+    // }),
   }).and("lat", "lng");
   return createSchema.validate(data, { abortEarly: false });
 };
@@ -73,9 +84,10 @@ exports.validateCreateProperty = (data) => {
 exports.validateUpdateProperty = (data) => {
   const updateSchema = Joi.object({
     ownerId: objectId().optional(),
-    type: Joi.string()
-      .valid(...Object.values(PROPERTY_TYPES))
-      .optional(),
+    // type: Joi.string()
+    //   .valid(...Object.values(PROPERTY_TYPES))
+    //   .optional(),
+    categoryId: objectId().optional(),
     ownerName: Joi.string().trim().optional(),
     mobile: Joi.string().length(10).optional(),
     fullAddress: Joi.string().optional(),
@@ -92,42 +104,50 @@ exports.validateUpdateProperty = (data) => {
     amountCurrencyCode: Joi.string()
       .valid(...Object.values(COUNTRY_NAME_TO_ISO))
       .optional(),
-    houseType: Joi.when("type", {
-      is: PROPERTY_TYPES.HOUSE,
-      then: Joi.string()
-        .valid(...Object.values(HOUSE_TYPES))
-        .required(),
-      otherwise: Joi.forbidden(),
-    }),
-    warehouseType: Joi.when("type", {
-      is: PROPERTY_TYPES.WAREHOUSE,
-      then: Joi.string()
-        .valid(...Object.values(WAREHOUSE_TYPES))
-        .optional(),
-      otherwise: Joi.forbidden(),
-    }),
-    areaValue: Joi.when("type", {
-      is: Joi.valid(
-        PROPERTY_TYPES.SHOP,
-        PROPERTY_TYPES.OFFICE,
-        PROPERTY_TYPES.LAND,
-        PROPERTY_TYPES.WAREHOUSE
-      ),
-      then: Joi.number().required(),
-      otherwise: Joi.forbidden(),
-    }),
-    areaUnit: Joi.when("type", {
-      is: Joi.valid(
-        PROPERTY_TYPES.SHOP,
-        PROPERTY_TYPES.OFFICE,
-        PROPERTY_TYPES.LAND,
-        PROPERTY_TYPES.WAREHOUSE
-      ),
-      then: Joi.string()
-        .valid(...Object.values(AREA_UNITS))
-        .default(AREA_UNITS.SQFT),
-      otherwise: Joi.forbidden(),
-    }),
+    houseType: Joi.string()
+      .valid(...Object.values(HOUSE_TYPES))
+      .optional(),
+    // Joi.when("type", {
+    //   is: PROPERTY_TYPES.HOUSE,
+    //   then: Joi.string()
+    //     .valid(...Object.values(HOUSE_TYPES))
+    //     .required(),
+    //   otherwise: Joi.forbidden(),
+    // }),
+    warehouseType: Joi.string()
+      .valid(...Object.values(WAREHOUSE_TYPES))
+      .optional(),
+    //  Joi.when("type", {
+    //   is: PROPERTY_TYPES.WAREHOUSE,
+    //   then: Joi.string()
+    //     .valid(...Object.values(WAREHOUSE_TYPES))
+    //     .optional(),
+    //   otherwise: Joi.forbidden(),
+    // }),
+    areaValue: Joi.number().optional(),
+    // Joi.when("type", {
+    //   is: Joi.valid(
+    //     PROPERTY_TYPES.SHOP,
+    //     PROPERTY_TYPES.OFFICE,
+    //     PROPERTY_TYPES.LAND,
+    //     PROPERTY_TYPES.WAREHOUSE,
+    //   ),
+    //   then: Joi.number().required(),
+    //   otherwise: Joi.forbidden(),
+    // }),
+    areaUnit: Joi.valid(...Object.values(AREA_UNITS)).optional(),
+    // Joi.when("type", {
+    //   is: Joi.valid(
+    //     PROPERTY_TYPES.SHOP,
+    //     PROPERTY_TYPES.OFFICE,
+    //     PROPERTY_TYPES.LAND,
+    //     PROPERTY_TYPES.WAREHOUSE,
+    //   ),
+    //   then: Joi.string()
+    //     .valid(...Object.values(AREA_UNITS))
+    //     .default(AREA_UNITS.SQFT),
+    //   otherwise: Joi.forbidden(),
+    // }),
     removeImages: Joi.array().items(Joi.string().uri()).optional(),
     isReplaceImages: Joi.boolean().optional(),
     isAvailable: Joi.boolean().optional(),
@@ -150,9 +170,10 @@ exports.validateGetAllPropertiesQuery = (data) => {
     state: Joi.string().trim().min(1).max(100),
     country: Joi.string().trim().min(1).max(100),
     zipcode: Joi.string().pattern(/^\d{6}$/),
-    type: Joi.string()
-      .valid(...Object.values(PROPERTY_TYPES))
-      .uppercase(),
+    // type: Joi.string()
+    //   .valid(...Object.values(PROPERTY_TYPES))
+    //   .uppercase(),
+    categoryId: objectId().optional(),
     houseType: Joi.string()
       .valid(...Object.values(HOUSE_TYPES))
       .uppercase(),
